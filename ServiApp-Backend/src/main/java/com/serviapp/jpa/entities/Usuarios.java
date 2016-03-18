@@ -5,9 +5,16 @@
  */
 package com.serviapp.jpa.entities;
 
+import com.serviapp.rest.auth.DigestUtil;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,6 +24,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -26,6 +34,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -105,8 +114,13 @@ public class Usuarios implements Serializable {
     @Size(min = 1, max = 20)
     @Column(name = "numero_documento")
     private String numeroDocumento;
-    @ManyToMany(mappedBy = "usuariosList")
-    private List<Roles> rolesList;
+   @ManyToMany
+    @JoinTable(name="ROLES_USUARIOS",
+            joinColumns = @JoinColumn(name ="id_usuario",
+                 referencedColumnName = "id_usuario"),
+            inverseJoinColumns = @JoinColumn (name ="id_rol",
+                    referencedColumnName="id_rol"))
+    private List<Roles> roles;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idUsuario")
     private List<Titulos> titulosList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idUsuario")
@@ -124,6 +138,9 @@ public class Usuarios implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "usuarios")
     private List<CalificacionesServicios> calificacionesServiciosList;
 
+     @Transient
+    SimpleDateFormat date = new SimpleDateFormat("MM/dd/yyyy");
+    
     public Usuarios() {
     }
 
@@ -192,12 +209,16 @@ public class Usuarios implements Serializable {
         this.email = email;
     }
 
-    public Date getFechaNac() {
-        return fechaNac;
+    public String getFechaNac() {
+        return date.format(fechaNac);
     }
 
-    public void setFechaNac(Date fechaNac) {
-        this.fechaNac = fechaNac;
+    public void setFechaNac(String fechaNac) {
+        try {
+            this.fechaNac = date.parse(fechaNac);
+        } catch (ParseException ex) {
+            Logger.getLogger(Usuarios.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public Character getSexo() {
@@ -212,8 +233,12 @@ public class Usuarios implements Serializable {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+     public void setPassword(String password) {
+        try {
+            this.password = DigestUtil.generateDigest(password);
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
+            Logger.getLogger(Usuarios.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public byte[] getFotoPerfil() {
@@ -233,12 +258,12 @@ public class Usuarios implements Serializable {
     }
 
     @XmlTransient
-    public List<Roles> getRolesList() {
-        return rolesList;
+    public List<Roles> getRoles() {
+        return roles;
     }
 
-    public void setRolesList(List<Roles> rolesList) {
-        this.rolesList = rolesList;
+    public void setRoles(List<Roles> roles) {
+        this.roles = roles;
     }
 
     @XmlTransient

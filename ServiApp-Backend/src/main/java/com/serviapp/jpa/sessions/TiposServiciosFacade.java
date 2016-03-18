@@ -6,6 +6,7 @@
 package com.serviapp.jpa.sessions;
 
 import com.serviapp.jpa.entities.TiposServicios;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,6 +27,12 @@ public class TiposServiciosFacade extends AbstractFacade<TiposServicios> {
 
     public TiposServiciosFacade() {
         super(TiposServicios.class);
+    }
+    
+     public List<TiposServicios> findByNombre(String nombre) {
+        return getEntityManager().createNamedQuery("TiposServicios.findByNombre")
+                .setParameter("nombres", nombre + "%")
+                .getResultList();
     }
     
 }
