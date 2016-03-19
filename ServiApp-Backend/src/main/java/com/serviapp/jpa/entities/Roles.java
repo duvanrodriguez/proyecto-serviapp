@@ -46,10 +46,7 @@ public class Roles implements Serializable {
     @Size(min = 1, max = 20)
     @Column(name = "nombre_rol")
     private String nombreRol;
-    @JoinTable(name = "roles_usuarios", joinColumns = {
-        @JoinColumn(name = "id_rol", referencedColumnName = "id_rol")}, inverseJoinColumns = {
-        @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario")})
-    @ManyToMany
+  @ManyToMany(mappedBy = "rolesList")
     private List<Usuarios> usuariosList;
 
     public Roles() {

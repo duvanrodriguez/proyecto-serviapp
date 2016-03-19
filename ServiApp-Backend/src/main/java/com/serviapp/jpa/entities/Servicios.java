@@ -20,17 +20,15 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author usuario
+ * @author adsi2
  */
 @Entity
-@Table(name = "servicios")
+@Table(name = "SERVICIOS")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Servicios.findAll", query = "SELECT s FROM Servicios s"),
@@ -39,6 +37,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Servicios.findByDescripcion", query = "SELECT s FROM Servicios s WHERE s.descripcion = :descripcion"),
     @NamedQuery(name = "Servicios.findByValor", query = "SELECT s FROM Servicios s WHERE s.valor = :valor")})
 public class Servicios implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,23 +45,18 @@ public class Servicios implements Serializable {
     @Column(name = "id_servicio")
     private Integer idServicio;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 20)
     @Column(name = "nombre")
     private String nombre;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 100)
     @Column(name = "descripcion")
     private String descripcion;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "valor")
     private double valor;
-    @JoinColumn(name = "id_tipo_servicio", referencedColumnName = "id_tipo_servicio")
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario")
     @ManyToOne(optional = false)
-    private TiposServicios idTipoServicio;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "servicios")
+    private Usuarios idUsuario;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idServicio")
     private List<CalificacionesServicios> calificacionesServiciosList;
 
     public Servicios() {
@@ -111,12 +105,12 @@ public class Servicios implements Serializable {
         this.valor = valor;
     }
 
-    public TiposServicios getIdTipoServicio() {
-        return idTipoServicio;
+    public Usuarios getIdUsuario() {
+        return idUsuario;
     }
 
-    public void setIdTipoServicio(TiposServicios idTipoServicio) {
-        this.idTipoServicio = idTipoServicio;
+    public void setIdUsuario(Usuarios idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
     @XmlTransient

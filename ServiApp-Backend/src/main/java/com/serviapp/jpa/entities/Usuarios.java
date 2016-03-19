@@ -23,11 +23,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -35,17 +33,15 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author usuario
+ * @author adsi2
  */
 @Entity
-@Table(name = "usuarios")
+@Table(name = "USUARIOS")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Usuarios.findAll", query = "SELECT u FROM Usuarios u"),
@@ -60,6 +56,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Usuarios.findByPassword", query = "SELECT u FROM Usuarios u WHERE u.password = :password"),
     @NamedQuery(name = "Usuarios.findByNumeroDocumento", query = "SELECT u FROM Usuarios u WHERE u.numeroDocumento = :numeroDocumento")})
 public class Usuarios implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,80 +64,49 @@ public class Usuarios implements Serializable {
     @Column(name = "id_usuario")
     private Integer idUsuario;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 40)
     @Column(name = "nombres")
     private String nombres;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 40)
     @Column(name = "apellidos")
     private String apellidos;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 16)
     @Column(name = "telefono")
     private String telefono;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 100)
     @Column(name = "direccion")
     private String direccion;
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 100)
     @Column(name = "email")
     private String email;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "fecha_nac")
     @Temporal(TemporalType.DATE)
     private Date fechaNac;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "sexo")
     private Character sexo;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 200)
     @Column(name = "password")
     private String password;
     @Lob
     @Column(name = "foto_perfil")
     private byte[] fotoPerfil;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 20)
     @Column(name = "numero_documento")
     private String numeroDocumento;
-   @ManyToMany
-    @JoinTable(name="ROLES_USUARIOS",
-            joinColumns = @JoinColumn(name ="id_usuario",
-                 referencedColumnName = "id_usuario"),
-            inverseJoinColumns = @JoinColumn (name ="id_rol",
-                    referencedColumnName="id_rol"))
-    private List<Roles> roles;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idUsuario")
-    private List<Titulos> titulosList;
+    private List<Servicios> serviciosList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idUsuario")
-    private List<TrabajosRealizados> trabajosRealizadosList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idUsuario")
-    private List<Facturas> facturasList;
-    @JoinColumns({
-        @JoinColumn(name = "id_ciudad", referencedColumnName = "id_ciudad"),
-        @JoinColumn(name = "id_departamento", referencedColumnName = "id_departamento")})
-    @ManyToOne(optional = false)
-    private Ciudades ciudades;
-    @JoinColumn(name = "id_tipo_documento", referencedColumnName = "id_tipo_documento")
-    @ManyToOne(optional = false)
-    private TipoDocumentos idTipoDocumento;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "usuarios")
     private List<CalificacionesServicios> calificacionesServiciosList;
-
-     @Transient
+     @JoinTable(name = "ROLES_USUARIOS", joinColumns = {
+        @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario")}, inverseJoinColumns = {
+        @JoinColumn(name = "id_rol", referencedColumnName = "id_rol")})
+    @ManyToMany
+    private List<Roles> rolesList;
+     
+       @Transient
     SimpleDateFormat date = new SimpleDateFormat("MM/dd/yyyy");
-    
+
     public Usuarios() {
     }
 
@@ -209,7 +175,7 @@ public class Usuarios implements Serializable {
         this.email = email;
     }
 
-    public String getFechaNac() {
+   public String getFechaNac() {
         return date.format(fechaNac);
     }
 
@@ -229,11 +195,11 @@ public class Usuarios implements Serializable {
         this.sexo = sexo;
     }
 
-    public String getPassword() {
+   public String getPassword() {
         return password;
     }
 
-     public void setPassword(String password) {
+    public void setPassword(String password) {
         try {
             this.password = DigestUtil.generateDigest(password);
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
@@ -257,56 +223,22 @@ public class Usuarios implements Serializable {
         this.numeroDocumento = numeroDocumento;
     }
 
+     @XmlTransient
+    public List<Roles> getRolesList() {
+        return rolesList;
+    }
+
+    public void setRolesList(List<Roles> rolesList) {
+        this.rolesList = rolesList;
+    }
+    
     @XmlTransient
-    public List<Roles> getRoles() {
-        return roles;
+    public List<Servicios> getServiciosList() {
+        return serviciosList;
     }
 
-    public void setRoles(List<Roles> roles) {
-        this.roles = roles;
-    }
-
-    @XmlTransient
-    public List<Titulos> getTitulosList() {
-        return titulosList;
-    }
-
-    public void setTitulosList(List<Titulos> titulosList) {
-        this.titulosList = titulosList;
-    }
-
-    @XmlTransient
-    public List<TrabajosRealizados> getTrabajosRealizadosList() {
-        return trabajosRealizadosList;
-    }
-
-    public void setTrabajosRealizadosList(List<TrabajosRealizados> trabajosRealizadosList) {
-        this.trabajosRealizadosList = trabajosRealizadosList;
-    }
-
-    @XmlTransient
-    public List<Facturas> getFacturasList() {
-        return facturasList;
-    }
-
-    public void setFacturasList(List<Facturas> facturasList) {
-        this.facturasList = facturasList;
-    }
-
-    public Ciudades getCiudades() {
-        return ciudades;
-    }
-
-    public void setCiudades(Ciudades ciudades) {
-        this.ciudades = ciudades;
-    }
-
-    public TipoDocumentos getIdTipoDocumento() {
-        return idTipoDocumento;
-    }
-
-    public void setIdTipoDocumento(TipoDocumentos idTipoDocumento) {
-        this.idTipoDocumento = idTipoDocumento;
+    public void setServiciosList(List<Servicios> serviciosList) {
+        this.serviciosList = serviciosList;
     }
 
     @XmlTransient

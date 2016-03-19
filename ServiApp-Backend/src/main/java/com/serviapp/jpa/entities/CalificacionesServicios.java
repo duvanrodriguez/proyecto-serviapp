@@ -9,8 +9,8 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -18,70 +18,63 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author usuario
+ * @author adsi2
  */
 @Entity
-@Table(name = "calificaciones_servicios")
+@Table(name = "CALIFICACIONES_SERVICIOS")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "CalificacionesServicios.findAll", query = "SELECT c FROM CalificacionesServicios c"),
-    @NamedQuery(name = "CalificacionesServicios.findByIdUsuario", query = "SELECT c FROM CalificacionesServicios c WHERE c.calificacionesServiciosPK.idUsuario = :idUsuario"),
-    @NamedQuery(name = "CalificacionesServicios.findByIdServicio", query = "SELECT c FROM CalificacionesServicios c WHERE c.calificacionesServiciosPK.idServicio = :idServicio"),
+    @NamedQuery(name = "CalificacionesServicios.findByIdCalificacion", query = "SELECT c FROM CalificacionesServicios c WHERE c.idCalificacion = :idCalificacion"),
     @NamedQuery(name = "CalificacionesServicios.findByPuntuacion", query = "SELECT c FROM CalificacionesServicios c WHERE c.puntuacion = :puntuacion"),
     @NamedQuery(name = "CalificacionesServicios.findByComentario", query = "SELECT c FROM CalificacionesServicios c WHERE c.comentario = :comentario"),
     @NamedQuery(name = "CalificacionesServicios.findByFecha", query = "SELECT c FROM CalificacionesServicios c WHERE c.fecha = :fecha")})
 public class CalificacionesServicios implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected CalificacionesServiciosPK calificacionesServiciosPK;
+    @Id
     @Basic(optional = false)
-    @NotNull
+    @Column(name = "id_calificacion")
+    private Integer idCalificacion;
+    @Basic(optional = false)
     @Column(name = "puntuacion")
     private short puntuacion;
-    @Size(max = 140)
     @Column(name = "comentario")
     private String comentario;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "fecha")
     @Temporal(TemporalType.DATE)
     private Date fecha;
-    @JoinColumn(name = "id_servicio", referencedColumnName = "id_servicio", insertable = false, updatable = false)
+    @JoinColumn(name = "id_servicio", referencedColumnName = "id_servicio")
     @ManyToOne(optional = false)
-    private Servicios servicios;
-    @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario", insertable = false, updatable = false)
+    private Servicios idServicio;
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario")
     @ManyToOne(optional = false)
-    private Usuarios usuarios;
+    private Usuarios idUsuario;
 
     public CalificacionesServicios() {
     }
 
-    public CalificacionesServicios(CalificacionesServiciosPK calificacionesServiciosPK) {
-        this.calificacionesServiciosPK = calificacionesServiciosPK;
+    public CalificacionesServicios(Integer idCalificacion) {
+        this.idCalificacion = idCalificacion;
     }
 
-    public CalificacionesServicios(CalificacionesServiciosPK calificacionesServiciosPK, short puntuacion, Date fecha) {
-        this.calificacionesServiciosPK = calificacionesServiciosPK;
+    public CalificacionesServicios(Integer idCalificacion, short puntuacion, Date fecha) {
+        this.idCalificacion = idCalificacion;
         this.puntuacion = puntuacion;
         this.fecha = fecha;
     }
 
-    public CalificacionesServicios(int idUsuario, int idServicio) {
-        this.calificacionesServiciosPK = new CalificacionesServiciosPK(idUsuario, idServicio);
+    public Integer getIdCalificacion() {
+        return idCalificacion;
     }
 
-    public CalificacionesServiciosPK getCalificacionesServiciosPK() {
-        return calificacionesServiciosPK;
-    }
-
-    public void setCalificacionesServiciosPK(CalificacionesServiciosPK calificacionesServiciosPK) {
-        this.calificacionesServiciosPK = calificacionesServiciosPK;
+    public void setIdCalificacion(Integer idCalificacion) {
+        this.idCalificacion = idCalificacion;
     }
 
     public short getPuntuacion() {
@@ -108,26 +101,26 @@ public class CalificacionesServicios implements Serializable {
         this.fecha = fecha;
     }
 
-    public Servicios getServicios() {
-        return servicios;
+    public Servicios getIdServicio() {
+        return idServicio;
     }
 
-    public void setServicios(Servicios servicios) {
-        this.servicios = servicios;
+    public void setIdServicio(Servicios idServicio) {
+        this.idServicio = idServicio;
     }
 
-    public Usuarios getUsuarios() {
-        return usuarios;
+    public Usuarios getIdUsuario() {
+        return idUsuario;
     }
 
-    public void setUsuarios(Usuarios usuarios) {
-        this.usuarios = usuarios;
+    public void setIdUsuario(Usuarios idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (calificacionesServiciosPK != null ? calificacionesServiciosPK.hashCode() : 0);
+        hash += (idCalificacion != null ? idCalificacion.hashCode() : 0);
         return hash;
     }
 
@@ -138,7 +131,7 @@ public class CalificacionesServicios implements Serializable {
             return false;
         }
         CalificacionesServicios other = (CalificacionesServicios) object;
-        if ((this.calificacionesServiciosPK == null && other.calificacionesServiciosPK != null) || (this.calificacionesServiciosPK != null && !this.calificacionesServiciosPK.equals(other.calificacionesServiciosPK))) {
+        if ((this.idCalificacion == null && other.idCalificacion != null) || (this.idCalificacion != null && !this.idCalificacion.equals(other.idCalificacion))) {
             return false;
         }
         return true;
@@ -146,7 +139,7 @@ public class CalificacionesServicios implements Serializable {
 
     @Override
     public String toString() {
-        return "com.serviapp.jpa.entities.CalificacionesServicios[ calificacionesServiciosPK=" + calificacionesServiciosPK + " ]";
+        return "com.serviapp.jpa.entities.CalificacionesServicios[ idCalificacion=" + idCalificacion + " ]";
     }
     
 }
