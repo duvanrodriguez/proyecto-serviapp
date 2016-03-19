@@ -20,6 +20,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -45,14 +47,22 @@ public class Servicios implements Serializable {
     @Column(name = "id_servicio")
     private Integer idServicio;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 20)
     @Column(name = "nombre")
     private String nombre;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 100)
     @Column(name = "descripcion")
     private String descripcion;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "valor")
     private double valor;
+    @JoinColumn(name = "id_tipo_servicio", referencedColumnName = "id_tipo_servicio")
+    @ManyToOne(optional = false)
+    private TiposServicios idTipoServicio;
     @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario")
     @ManyToOne(optional = false)
     private Usuarios idUsuario;
@@ -103,6 +113,14 @@ public class Servicios implements Serializable {
 
     public void setValor(double valor) {
         this.valor = valor;
+    }
+
+    public TiposServicios getIdTipoServicio() {
+        return idTipoServicio;
+    }
+
+    public void setIdTipoServicio(TiposServicios idTipoServicio) {
+        this.idTipoServicio = idTipoServicio;
     }
 
     public Usuarios getIdUsuario() {

@@ -46,7 +46,7 @@ public class Roles implements Serializable {
     @Size(min = 1, max = 20)
     @Column(name = "nombre_rol")
     private String nombreRol;
-  @ManyToMany(mappedBy = "rolesList")
+   @ManyToMany(mappedBy = "rolesList")
     private List<Usuarios> usuariosList;
 
     public Roles() {

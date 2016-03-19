@@ -47,11 +47,11 @@ public class ServiciosRest {
                     new Usuarios(
                             Integer.parseInt(
                                     AuthUtils.getSubject(
-                                            request.getHeader(AuthUtils.AUTH_HEADER_KEY))))
-                                    
-                            
-                    );
-            
+                                            request.getHeader(AuthUtils.AUTH_HEADER_KEY)
+                                    )
+                            )
+                    )
+            );
             ejbServiciosFacade.create(servicio);
             return Response.ok().entity(gson.toJson("El servicio fue creado exitosamente")).build();
         } catch (EJBException ex) {

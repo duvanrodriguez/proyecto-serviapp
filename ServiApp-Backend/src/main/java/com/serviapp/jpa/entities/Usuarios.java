@@ -23,9 +23,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -33,6 +35,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -64,49 +68,75 @@ public class Usuarios implements Serializable {
     @Column(name = "id_usuario")
     private Integer idUsuario;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 40)
     @Column(name = "nombres")
     private String nombres;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 40)
     @Column(name = "apellidos")
     private String apellidos;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 16)
     @Column(name = "telefono")
     private String telefono;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 100)
     @Column(name = "direccion")
     private String direccion;
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 100)
     @Column(name = "email")
     private String email;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "fecha_nac")
     @Temporal(TemporalType.DATE)
     private Date fechaNac;
     @Basic(optional = false)
+    @NotNull
     @Column(name = "sexo")
     private Character sexo;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 200)
     @Column(name = "password")
     private String password;
     @Lob
     @Column(name = "foto_perfil")
     private byte[] fotoPerfil;
     @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 20)
     @Column(name = "numero_documento")
     private String numeroDocumento;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idUsuario")
     private List<Servicios> serviciosList;
+    @JoinColumns({
+        @JoinColumn(name = "id_ciudad", referencedColumnName = "id_ciudad"),
+        @JoinColumn(name = "id_departamento", referencedColumnName = "id_departamento")})
+    @ManyToOne(optional = false)
+    private Ciudades ciudades;
+    @JoinColumn(name = "id_tipo_documento", referencedColumnName = "id_tipo_documento")
+    @ManyToOne(optional = false)
+    private TipoDocumentos idTipoDocumento;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idUsuario")
     private List<CalificacionesServicios> calificacionesServiciosList;
-     @JoinTable(name = "ROLES_USUARIOS", joinColumns = {
+    @JoinTable(name = "USUARIOS_HAS_ROLES", joinColumns = {
         @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario")}, inverseJoinColumns = {
         @JoinColumn(name = "id_rol", referencedColumnName = "id_rol")})
     @ManyToMany
     private List<Roles> rolesList;
-     
-       @Transient
-    SimpleDateFormat date = new SimpleDateFormat("MM/dd/yyyy");
 
+   
+    @Transient
+    SimpleDateFormat date = new SimpleDateFormat("MM/dd/yyyy");
+    
     public Usuarios() {
     }
 
@@ -195,7 +225,7 @@ public class Usuarios implements Serializable {
         this.sexo = sexo;
     }
 
-   public String getPassword() {
+     public String getPassword() {
         return password;
     }
 
@@ -223,7 +253,7 @@ public class Usuarios implements Serializable {
         this.numeroDocumento = numeroDocumento;
     }
 
-     @XmlTransient
+   @XmlTransient
     public List<Roles> getRolesList() {
         return rolesList;
     }
@@ -231,7 +261,7 @@ public class Usuarios implements Serializable {
     public void setRolesList(List<Roles> rolesList) {
         this.rolesList = rolesList;
     }
-    
+
     @XmlTransient
     public List<Servicios> getServiciosList() {
         return serviciosList;
@@ -239,6 +269,22 @@ public class Usuarios implements Serializable {
 
     public void setServiciosList(List<Servicios> serviciosList) {
         this.serviciosList = serviciosList;
+    }
+
+    public Ciudades getCiudades() {
+        return ciudades;
+    }
+
+    public void setCiudades(Ciudades ciudades) {
+        this.ciudades = ciudades;
+    }
+
+    public TipoDocumentos getIdTipoDocumento() {
+        return idTipoDocumento;
+    }
+
+    public void setIdTipoDocumento(TipoDocumentos idTipoDocumento) {
+        this.idTipoDocumento = idTipoDocumento;
     }
 
     @XmlTransient
